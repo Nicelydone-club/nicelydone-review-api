@@ -54,6 +54,18 @@ export function createReview(body = {}) {
   return review
 }
 
+// Update an existing review by id. Returns the updated review, or null if the
+// id is unknown.
+export function updateReview(id, body = {}) {
+  const review = getReview(id)
+  if (!review) return null
+
+  // Apply the incoming changes and coerce the rating to a number.
+  Object.assign(review, body)
+  review.rating = parseInt(body.rating, 10)
+  return review
+}
+
 // Reset to the seeded fixture (used by tests).
 export function _resetForTests() {
   reviews = seed.map((r) => ({...r}))
