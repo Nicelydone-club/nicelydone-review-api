@@ -1,0 +1,23 @@
+[
+  {
+    "id": "rev-101",
+    "title": "Checkout validation",
+    "repository": "nicelydone/checkout-web",
+    "author": "Laura Bennett",
+    "rating": 5
+  },
+  {
+    "id": "rev-102",
+    "title": "Search result caching",
+    "repository": "nicelydone/search-api",
+    "author": "Jeremy Parker",
+    "rating": 4
+  },
+  {
+    "id": "rev-103",
+    "title": "Webhook retry policy",
+    "repository": "nicelydone/notifications",
+    "author": "Alice Morgan",
+    "rating": 3
+  }
+]
