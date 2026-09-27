@@ -60,9 +60,22 @@ export function updateReview(id, body = {}) {
   const review = getReview(id)
   if (!review) return null
 
-  // Apply the incoming changes and coerce the rating to a number.
-  Object.assign(review, body)
-  review.rating = parseInt(body.rating, 10)
+  // Only allow known fields (no mass assignment of id or arbitrary keys).
+  const allowed = ['title', 'repository', 'author', 'rating']
+  const updates = {}
+  for (const key of allowed) {
+    if (key in body) updates[key] = body[key]
+  }
+
+  if ('rating' in updates) {
+    if (!Number.isInteger(updates.rating) || updates.rating < 1 || updates.rating > 5) {
+      throw new ValidationError('Invalid review payload', {
+        rating: 'rating must be an integer from 1 through 5',
+      })
+    }
+  }
+
+  Object.assign(review, updates)
   return review
 }
 

@@ -44,11 +44,18 @@ app.post('/api/reviews', (req, res) => {
 })
 
 app.patch('/api/reviews/:id', (req, res) => {
-  const updated = updateReview(req.params.id, req.body)
-  if (!updated) {
-    return res.status(404).json({error: 'Review not found'})
+  try {
+    const updated = updateReview(req.params.id, req.body)
+    if (!updated) {
+      return res.status(404).json({error: 'Review not found'})
+    }
+    res.json(updated)
+  } catch (err) {
+    if (err instanceof ValidationError) {
+      return res.status(400).json({error: err.message, details: err.details})
+    }
+    res.status(500).json({error: 'Internal server error'})
   }
-  res.json(updated)
 })
 
 // JSON 404 for anything else.

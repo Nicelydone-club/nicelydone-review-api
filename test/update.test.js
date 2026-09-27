@@ -20,3 +20,21 @@ test('PATCH /api/reviews/:id returns JSON 404 for unknown id', async () => {
   assert.equal(res.status, 404)
   assert.equal(res.body.error, 'Review not found')
 })
+
+test('PATCH /api/reviews/:id rejects non-integer / out-of-range ratings', async () => {
+  for (const rating of [0, 6, 3.5, '4']) {
+    const res = await request(app).patch('/api/reviews/rev-101').send({rating})
+    assert.equal(res.status, 400)
+    assert.ok(res.body.details.rating)
+  }
+})
+
+test('PATCH /api/reviews/:id ignores unknown fields (no mass assignment)', async () => {
+  const res = await request(app)
+    .patch('/api/reviews/rev-101')
+    .send({title: 'Renamed', id: 'hacked', role: 'admin'})
+  assert.equal(res.status, 200)
+  assert.equal(res.body.id, 'rev-101')
+  assert.equal(res.body.title, 'Renamed')
+  assert.equal(res.body.role, undefined)
+})
