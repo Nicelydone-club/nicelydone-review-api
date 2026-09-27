@@ -1,7 +1,7 @@
 // Nicelydone Review API — Express service that owns review records.
 import express from 'express'
 import {fileURLToPath} from 'node:url'
-import {listReviews, getReview, createReview, ValidationError} from './reviews.js'
+import {listReviews, getReview, createReview, updateReview, ValidationError} from './reviews.js'
 
 export const app = express()
 app.use(express.json())
@@ -35,6 +35,21 @@ app.post('/api/reviews', (req, res) => {
   try {
     const review = createReview(req.body)
     res.status(201).json(review)
+  } catch (err) {
+    if (err instanceof ValidationError) {
+      return res.status(400).json({error: err.message, details: err.details})
+    }
+    res.status(500).json({error: 'Internal server error'})
+  }
+})
+
+app.patch('/api/reviews/:id', (req, res) => {
+  try {
+    const updated = updateReview(req.params.id, req.body)
+    if (!updated) {
+      return res.status(404).json({error: 'Review not found'})
+    }
+    res.json(updated)
   } catch (err) {
     if (err instanceof ValidationError) {
       return res.status(400).json({error: err.message, details: err.details})

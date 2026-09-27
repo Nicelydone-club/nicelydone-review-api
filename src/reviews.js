@@ -54,6 +54,31 @@ export function createReview(body = {}) {
   return review
 }
 
+// Update an existing review by id. Returns the updated review, or null if the
+// id is unknown.
+export function updateReview(id, body = {}) {
+  const review = getReview(id)
+  if (!review) return null
+
+  // Only allow known fields (no mass assignment of id or arbitrary keys).
+  const allowed = ['title', 'repository', 'author', 'rating']
+  const updates = {}
+  for (const key of allowed) {
+    if (key in body) updates[key] = body[key]
+  }
+
+  if ('rating' in updates) {
+    if (!Number.isInteger(updates.rating) || updates.rating < 1 || updates.rating > 5) {
+      throw new ValidationError('Invalid review payload', {
+        rating: 'rating must be an integer from 1 through 5',
+      })
+    }
+  }
+
+  Object.assign(review, updates)
+  return review
+}
+
 // Reset to the seeded fixture (used by tests).
 export function _resetForTests() {
   reviews = seed.map((r) => ({...r}))
